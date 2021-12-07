@@ -1,0 +1,154 @@
+"GeoFips","GeoName","LineCode","Description","2019:Q1","2019:Q2","2019:Q3","2019:Q4"
+"01000","Alabama","12","      Manufacturing",-0.47,0.34,0.44,0.32
+"01000","Alabama","45","      Information",-0.16,0.52,0.10,0.12
+"01000","Alabama","51","      Finance and insurance",0.28,-0.15,-0.42,0.15
+"02000","Alaska","12","      Manufacturing",0.70,0.64,0.50,0.02
+"02000","Alaska","45","      Information",-0.59,0.10,0.01,0.17
+"02000","Alaska","51","      Finance and insurance",-0.01,-0.06,-0.17,0.11
+"04000","Arizona","12","      Manufacturing",2.09,-0.16,-0.35,-1.02
+"04000","Arizona","45","      Information",1.96,0.31,-0.07,0.45
+"04000","Arizona","51","      Finance and insurance",1.60,0.17,-0.45,0.99
+"05000","Arkansas","12","      Manufacturing",-0.51,1.27,0.84,0.01
+"05000","Arkansas","45","      Information",0.42,0.14,0.02,0.02
+"05000","Arkansas","51","      Finance and insurance",1.15,0.05,0.02,0.77
+"06000","California","12","      Manufacturing",-0.33,1.47,0.65,0.01
+"06000","California","45","      Information",1.09,1.48,0.69,0.54
+"06000","California","51","      Finance and insurance",0.49,-0.18,-0.18,0.53
+"08000","Colorado","12","      Manufacturing",0.57,0.73,0.13,-0.17
+"08000","Colorado","45","      Information",-0.10,1.69,1.68,0.44
+"08000","Colorado","51","      Finance and insurance",-0.03,0.51,-0.02,0.76
+"09000","Connecticut","12","      Manufacturing",-1.19,0.66,0.09,-0.96
+"09000","Connecticut","45","      Information",1.60,0.63,0.05,-0.06
+"09000","Connecticut","51","      Finance and insurance",-1.54,1.11,0.15,1.18
+"10000","Delaware","12","      Manufacturing",1.30,1.27,1.13,0.31
+"10000","Delaware","45","      Information",-0.03,0.11,0.06,0.06
+"10000","Delaware","51","      Finance and insurance",1.75,4.26,1.26,2.61
+"11000","District of Columbia","12","      Manufacturing",-0.02,-0.01,0.01,0.00
+"11000","District of Columbia","45","      Information",0.44,0.75,0.40,0.54
+"11000","District of Columbia","51","      Finance and insurance",0.80,0.01,0.12,0.90
+"12000","Florida","12","      Manufacturing",0.63,0.25,0.11,-0.05
+"12000","Florida","45","      Information",-0.31,0.43,0.26,0.26
+"12000","Florida","51","      Finance and insurance",1.17,0.05,-0.09,0.58
+"13000","Georgia","12","      Manufacturing",-1.23,0.92,0.51,-0.42
+"13000","Georgia","45","      Information",2.70,0.22,0.20,0.10
+"13000","Georgia","51","      Finance and insurance",1.24,0.00,-0.20,0.69
+"15000","Hawaii","12","      Manufacturing",-0.41,-0.09,0.05,-0.11
+"15000","Hawaii","45","      Information",-0.97,0.16,0.11,0.16
+"15000","Hawaii","51","      Finance and insurance",0.61,-0.23,-0.17,0.38
+"16000","Idaho","12","      Manufacturing",-1.88,1.20,1.04,0.05
+"16000","Idaho","45","      Information",0.45,0.23,0.10,0.10
+"16000","Idaho","51","      Finance and insurance",0.98,-0.18,-0.24,0.32
+"17000","Illinois","12","      Manufacturing",-1.34,0.89,0.63,-0.27
+"17000","Illinois","45","      Information",0.37,0.30,0.13,0.17
+"17000","Illinois","51","      Finance and insurance",0.42,0.66,-0.46,0.60
+"18000","Indiana","12","      Manufacturing",-2.93,1.24,1.42,0.11
+"18000","Indiana","45","      Information",-0.30,0.17,0.09,0.10
+"18000","Indiana","51","      Finance and insurance",1.32,0.21,-1.36,1.17
+"19000","Iowa","12","      Manufacturing",-2.90,0.69,0.84,-0.28
+"19000","Iowa","45","      Information",-0.27,0.26,0.10,0.10
+"19000","Iowa","51","      Finance and insurance",1.59,0.22,0.46,2.63
+"20000","Kansas","12","      Manufacturing",1.19,-0.23,0.02,-1.35
+"20000","Kansas","45","      Information",-5.25,0.16,0.12,0.17
+"20000","Kansas","51","      Finance and insurance",0.26,0.03,0.04,0.77
+"21000","Kentucky","12","      Manufacturing",0.94,1.31,1.14,-0.84
+"21000","Kentucky","45","      Information",0.22,0.16,0.08,0.11
+"21000","Kentucky","51","      Finance and insurance",0.48,-0.05,0.03,0.91
+"22000","Louisiana","12","      Manufacturing",-0.46,0.93,0.96,-0.53
+"22000","Louisiana","45","      Information",-0.15,0.22,0.08,0.09
+"22000","Louisiana","51","      Finance and insurance",-0.29,0.04,0.08,0.71
+"23000","Maine","12","      Manufacturing",0.78,0.55,0.29,-0.34
+"23000","Maine","45","      Information",-0.27,0.15,0.05,0.09
+"23000","Maine","51","      Finance and insurance",1.02,0.43,0.31,1.15
+"24000","Maryland","12","      Manufacturing",0.29,0.48,0.35,0.03
+"24000","Maryland","45","      Information",-2.93,0.98,0.54,0.19
+"24000","Maryland","51","      Finance and insurance",0.08,-0.14,-0.35,0.18
+"25000","Massachusetts","12","      Manufacturing",-1.29,0.75,0.54,0.09
+"25000","Massachusetts","45","      Information",0.90,0.66,0.41,0.62
+"25000","Massachusetts","51","      Finance and insurance",-0.27,0.26,-0.22,1.20
+"26000","Michigan","12","      Manufacturing",-1.49,-0.21,0.62,-0.12
+"26000","Michigan","45","      Information",-0.06,0.34,0.14,0.13
+"26000","Michigan","51","      Finance and insurance",1.14,-0.51,0.23,0.14
+"27000","Minnesota","12","      Manufacturing",-1.47,0.08,0.41,-0.06
+"27000","Minnesota","45","      Information",0.54,0.28,0.13,0.16
+"27000","Minnesota","51","      Finance and insurance",0.93,-0.41,-0.43,0.81
+"28000","Mississippi","12","      Manufacturing",0.78,1.12,0.94,0.32
+"28000","Mississippi","45","      Information",-0.25,0.10,0.03,0.07
+"28000","Mississippi","51","      Finance and insurance",0.14,-0.04,-0.03,0.67
+"29000","Missouri","12","      Manufacturing",-0.56,1.43,1.19,-0.24
+"29000","Missouri","45","      Information",-0.01,0.62,-0.08,0.50
+"29000","Missouri","51","      Finance and insurance",0.89,-0.39,-0.33,0.84
+"30000","Montana","12","      Manufacturing",-1.51,-0.96,-0.56,-0.32
+"30000","Montana","45","      Information",-0.30,0.15,0.06,0.12
+"30000","Montana","51","      Finance and insurance",0.75,-0.26,-0.31,0.33
+"31000","Nebraska","12","      Manufacturing",0.97,0.30,0.65,-0.25
+"31000","Nebraska","45","      Information",-0.35,0.55,0.22,0.15
+"31000","Nebraska","51","      Finance and insurance",3.05,1.57,0.95,1.94
+"32000","Nevada","12","      Manufacturing",1.11,-0.09,0.02,-0.01
+"32000","Nevada","45","      Information",1.27,0.02,0.06,0.05
+"32000","Nevada","51","      Finance and insurance",0.95,0.40,0.02,0.45
+"33000","New Hampshire","12","      Manufacturing",-0.60,-0.13,0.00,0.03
+"33000","New Hampshire","45","      Information",0.70,0.26,0.17,0.30
+"33000","New Hampshire","51","      Finance and insurance",1.56,-0.29,-0.74,-0.04
+"34000","New Jersey","12","      Manufacturing",-2.08,1.06,1.54,-0.11
+"34000","New Jersey","45","      Information",-0.97,0.38,0.21,0.21
+"34000","New Jersey","51","      Finance and insurance",0.02,-0.22,-0.22,0.67
+"35000","New Mexico","12","      Manufacturing",1.91,0.68,0.64,0.13
+"35000","New Mexico","45","      Information",-0.45,0.22,0.06,0.07
+"35000","New Mexico","51","      Finance and insurance",0.08,-0.16,-0.06,0.52
+"36000","New York","12","      Manufacturing",-0.37,0.39,0.38,0.06
+"36000","New York","45","      Information",1.28,0.67,0.43,0.26
+"36000","New York","51","      Finance and insurance",1.39,1.77,0.10,2.47
+"37000","North Carolina","12","      Manufacturing",-1.09,0.74,0.60,-0.13
+"37000","North Carolina","45","      Information",-0.90,0.49,0.24,0.25
+"37000","North Carolina","51","      Finance and insurance",2.97,-0.08,-0.57,0.25
+"38000","North Dakota","12","      Manufacturing",1.46,0.51,0.67,0.18
+"38000","North Dakota","45","      Information",-0.23,0.23,0.16,0.22
+"38000","North Dakota","51","      Finance and insurance",0.29,-0.02,0.07,0.88
+"39000","Ohio","12","      Manufacturing",-0.16,0.93,0.94,0.28
+"39000","Ohio","45","      Information",-0.13,0.23,0.10,0.12
+"39000","Ohio","51","      Finance and insurance",1.70,0.60,0.04,0.97
+"40000","Oklahoma","12","      Manufacturing",-0.46,0.48,0.71,-0.08
+"40000","Oklahoma","45","      Information",-0.40,0.16,0.08,0.04
+"40000","Oklahoma","51","      Finance and insurance",0.14,-0.01,-0.05,0.44
+"41000","Oregon","12","      Manufacturing",-1.02,0.25,0.32,0.53
+"41000","Oregon","45","      Information",-0.55,0.47,0.22,0.25
+"41000","Oregon","51","      Finance and insurance",0.61,-0.16,-0.29,0.20
+"42000","Pennsylvania","12","      Manufacturing",0.24,1.30,1.63,0.54
+"42000","Pennsylvania","45","      Information",-2.33,1.00,0.73,0.20
+"42000","Pennsylvania","51","      Finance and insurance",1.30,-0.10,-0.30,0.52
+"44000","Rhode Island","12","      Manufacturing",-1.28,-0.43,-0.21,-0.09
+"44000","Rhode Island","45","      Information",-0.24,0.28,0.13,0.16
+"44000","Rhode Island","51","      Finance and insurance",1.97,0.44,0.09,1.23
+"45000","South Carolina","12","      Manufacturing",0.55,0.97,0.83,0.30
+"45000","South Carolina","45","      Information",0.16,0.20,0.15,0.08
+"45000","South Carolina","51","      Finance and insurance",1.84,-0.80,-0.45,0.46
+"46000","South Dakota","12","      Manufacturing",0.38,-1.40,-0.42,-0.15
+"46000","South Dakota","45","      Information",0.83,0.04,0.04,-0.02
+"46000","South Dakota","51","      Finance and insurance",6.16,0.61,-0.28,0.85
+"47000","Tennessee","12","      Manufacturing",-0.85,0.87,1.04,0.27
+"47000","Tennessee","45","      Information",-0.24,0.14,0.05,0.13
+"47000","Tennessee","51","      Finance and insurance",0.22,-0.08,0.01,0.91
+"48000","Texas","12","      Manufacturing",-1.15,0.09,0.48,-0.44
+"48000","Texas","45","      Information",-0.06,0.23,0.01,0.09
+"48000","Texas","51","      Finance and insurance",1.19,-0.29,-0.37,0.36
+"49000","Utah","12","      Manufacturing",1.53,0.65,0.67,0.19
+"49000","Utah","45","      Information",0.95,0.57,0.28,0.37
+"49000","Utah","51","      Finance and insurance",1.70,-0.26,-0.58,0.38
+"50000","Vermont","12","      Manufacturing",-0.58,0.38,0.62,0.69
+"50000","Vermont","45","      Information",0.16,0.21,0.12,0.18
+"50000","Vermont","51","      Finance and insurance",1.12,0.01,-0.20,0.36
+"51000","Virginia","12","      Manufacturing",-0.20,0.28,0.17,-0.28
+"51000","Virginia","45","      Information",1.73,0.05,-0.08,0.31
+"51000","Virginia","51","      Finance and insurance",0.60,-0.02,-0.11,0.55
+"53000","Washington","12","      Manufacturing",0.42,0.11,-0.04,-0.18
+"53000","Washington","45","      Information",4.54,1.62,0.65,0.91
+"53000","Washington","51","      Finance and insurance",0.73,-0.08,-0.07,0.49
+"54000","West Virginia","12","      Manufacturing",-1.27,0.16,0.57,0.06
+"54000","West Virginia","45","      Information",-0.56,0.21,0.11,0.13
+"54000","West Virginia","51","      Finance and insurance",0.02,-0.06,-0.01,0.53
+"55000","Wisconsin","12","      Manufacturing",-0.18,1.40,1.06,0.12
+"55000","Wisconsin","45","      Information",0.55,0.33,0.14,0.21
+"55000","Wisconsin","51","      Finance and insurance",1.10,-0.06,-0.45,0.29
+"56000","Wyoming","12","      Manufacturing",1.97,2.26,1.68,0.44
+"56000","Wyoming","45","      Information",-0.29,0.10,0.06,0.09
+"56000","Wyoming","51","      Finance and insurance",0.30,-0.19,-0.12,0.35
