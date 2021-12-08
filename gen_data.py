@@ -11,7 +11,7 @@ sim_params =  {
             'TREATMENT_YEAR' : {'mu' : 5, 
                                 'sigma' : 0},
             'EXOG_GROWTH_PCT' : {'mu' : .02, 
-                                'sigma' : .0005},
+                                'sigma' : .01},
             'EXOG_CONTROL_PCT_EXPLAINED': {'sigma' : .3},
             'SECTOR_GROWTH_PCT' : {'sigma' : 0},                   
             'SECTOR_GROWTH_PCT_PREDICTORS' : {},

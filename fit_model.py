@@ -35,11 +35,11 @@ def fit_TWFE(data, treatment_years, target, linear_time = False, treat_dummy_typ
         time_out = time_sparse
         baseline.append(time_labels[0])
 
-    if treat_dummy_type == 'invariant' or not staggered:
+    if treat_dummy_type == 'invariant':
         data_out = pd.concat([state_sparse, time_out, comp.d], axis = 1)
     else: #staggered treatment
         if treat_dummy_type == 'time_variant':
-            d_mat = comp.iloc[:,:-1].apply(lambda x: x*comp.d)
+            d_mat = comp.iloc[:,1:-1].apply(lambda x: x*comp.d)
             d_mat = d_mat.loc[:,d_mat.sum(axis = 0)!=0]
             d_mat.columns = d_mat.columns.str.replace('t','d')
         elif treat_dummy_type == 'state_variant':
