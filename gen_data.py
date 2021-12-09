@@ -23,41 +23,49 @@ sim_params =  {
         }
 
 @jit(nopython = True)
-def init_sim(state_int, N_STATES, N_TREATED, TREATMENT_YEAR, TREATMENT_EFFECT):
-    treat_mat = np.empty((N_STATES, 4))
+def init_sim(state_mat, N_STATES, N_TREATED, TREATMENT_YEAR_PAR, TREATMENT_EFFECT_PAR):
     
-    treat_mat[:,0] = np.random.choice(state_int, N_STATES)
-    treat_mat[:,1] = np.nan
+    treat_mat = np.empty((N_STATES, 6))
+    
+    treat_mat[:,0] = np.random.choice(state_mat[:,0], N_STATES, replace = False)
+    # choose random states
+    chosen_states_ind = treat_mat[:,0].astype(np.int8) 
+    # get region for chosen states
+    treat_mat[:,1] = state_mat[chosen_states_ind,1] 
+    # get initial growth rate for chosen states
+    treat_mat[:,2] = state_mat[chosen_states_ind,2]
+    treat_mat[:,3] = np.nan
 
-    treat_mat[0:N_TREATED,1] = 1.0
-    np.random.shuffle(treat_mat[:,1])
-    year_mu, year_sig = TREATMENT_YEAR
-    treat_mat[:,2] = np.random.normal(year_mu, year_sig,
-                                    N_STATES) * treat_mat[:,1]
+    # # assign treatment to N_TREATED states
+    treat_mat[0:N_TREATED,3] = 1.0
+    np.random.shuffle(treat_mat[:,3]) 
     
-    effect_mu, effect_sig = TREATMENT_EFFECT
-    treat_mat[:,3] = np.random.normal(effect_mu, effect_sig, N_STATES)
+    # # assign treatment year to N_TREATED states
+    year_mu, year_sig = TREATMENT_YEAR_PAR
+    treat_mat[:,4] = np.random.normal(year_mu, year_sig,
+                                    N_STATES) * treat_mat[:,3] 
+    
+    # # generate the potential treatment effect for all states
+    effect_mu, effect_sig = TREATMENT_EFFECT_PAR
+    treat_mat[:,5] = np.random.normal(effect_mu, effect_sig, N_STATES)
     
     return treat_mat
 
 @jit(nopython = True)
-def run_sim(treat_mat, init_growth, N_YEARS,
-             EXOG_GROWTH_PAR, EXOG_CONTROL_EXPLAINED_SIGMA, SECTOR_GROWTH_SIGMA):
-            #  SPATIAL_AUTOCORRELATION_PCT,
+def run_sim(init_mat, N_YEARS,
+             EXOG_GROWTH_PAR, EXOG_CONTROL_EXPLAINED_SIGMA, SECTOR_GROWTH_SIGMA,
+             SPATIAL_AUTOCORRELATION_PCT):
             #  , SECTOR_GROWTH_PCT_PREDICTORS,
             #  TREATMENT_EFFECT, TREATMENT_EFFECT_PREDICTORS):
-    N_STATES = init_growth.shape[0]
-    assert N_STATES == treat_mat.shape[0]
-
+    N_STATES = init_mat.shape[0]
     df_out = np.empty((N_STATES * (N_YEARS + 1), 4)) #state_id, t, stateControls_t, GDPcont_t
     for i_Year in range(0, N_YEARS + 1): # I think due to the fact that this is a time-series, there isn't a way to vectorize...
         df_row_idx = (i_Year * N_STATES) + np.arange(0,N_STATES) 
-        df_out[df_row_idx, 0] = treat_mat[:,0]
-        df_out[df_row_idx, 1] = i_Year
+        df_out[df_row_idx, 0] = init_mat[:,0] #State
+        print(init_mat[:,0])
+        df_out[df_row_idx, 1] = i_Year #timestep
 
-        # df_long = pd.DataFrame()
-
-        dummy_treated_t = (i_Year == treat_mat[:,1]).astype(np.int64)
+        dummy_treated_t = (i_Year == init_mat[:,4]).astype(np.int8)
 
         # this growth percentage is the mean of each individual state's growth percentage
         # can be thought of as the exogenous component to state level growth - ie, condition
@@ -65,26 +73,28 @@ def run_sim(treat_mat, init_growth, N_YEARS,
         exog_mu, exog_sig = EXOG_GROWTH_PAR
         i_Year_baseGrowth = np.random.normal(exog_mu, exog_sig, 1)[0]
 
-    #     # this growth percent varies by state, but drawn from the same distribution centered
-    #     # at the exogenous growth percentage drawn above
+        # this growth percent varies by state, but drawn from the same distribution centered
+        # at the exogenous growth percentage drawn above
         growth_pcts = np.random.normal(i_Year_baseGrowth,
                                         SECTOR_GROWTH_SIGMA,
                                         N_STATES)
-    #     if SPATIAL_AUTOCORRELATION_PCT != 0:
-    #         # if autocorrelated, take the random growth percents generated, and 
-    #         # make them all closer to their mean by region. If autocorrelation is 
-    #         # very high, ie 1, then all states in the region will have the same rate. 
-    #         # if 0, all states are indepedent and region has no effect.
-    #         autocor = data.loc[:,['Region']]
-    #         autocor['growth_pcts'] = growth_pcts
-    #         bunched = autocor.merge(autocor.groupby('Region').mean().reset_index(),
-    #                             on = 'Region',
-    #                             suffixes=('_state','_region'),
-    #                             ).set_index(autocor.index)
-    #         growth_pcts = \
-    #             bunched.loc[:,'growth_pcts_state'] * (1 - SPATIAL_AUTOCORRELATION_PCT) + \
-    #             bunched.loc[:,'growth_pcts_region'] * SPATIAL_AUTOCORRELATION_PCT
-        
+
+        if SPATIAL_AUTOCORRELATION_PCT != 0:
+            # if autocorrelated, take the random growth percents generated, and 
+            # make them all closer to their mean by region. If autocorrelation is 
+            # very high, ie 1, then all states in the region will have the same rate. 
+            # if 0, all states are indepedent and region has no effect.
+
+            region_growth_base = np.random.normal(i_Year_baseGrowth,
+                                        SECTOR_GROWTH_SIGMA,
+                                        N_STATES) * SPATIAL_AUTOCORRELATION_PCT
+
+            growth_pcts = growth_pcts * (1 - SPATIAL_AUTOCORRELATION_PCT)
+
+            for idx, region_id in enumerate(np.unique(init_mat[:,1])):
+                dummy_region = (init_mat[:,1] == region_id).astype(np.int8)
+                growth_pcts += region_growth_base[idx] * dummy_region
+
     #     # This is an index for endogenous variables that help us explain the growth rate
     #     # for a particular state - if the sigma here is 0, this means that we can explain
     #     # state level growth entirely since controls == growth pct
@@ -92,26 +102,17 @@ def run_sim(treat_mat, init_growth, N_YEARS,
                             EXOG_CONTROL_EXPLAINED_SIGMA,
                             N_STATES)
         df_out[df_row_idx,2] = growth_pcts * pct_explained
-        # df_long.loc[:,'stateControls_t'] = growth_pcts * pct_explained
 
     #     if len(SECTOR_GROWTH_PCT_PREDICTORS) != 0:
     #         for cov, delta in SECTOR_GROWTH_PCT_PREDICTORS.items():
     #             treatment_effects += data[treatment_effects[cov]] * delta
-        last_year_GDPcont = init_growth
 
         if i_Year > 0:
-            growth_pcts_treated = growth_pcts + (treat_mat[:,3] * dummy_treated_t)
-            new_GDPcont = last_year_GDPcont + growth_pcts_treated
-            df_out[df_row_idx,3] = new_GDPcont
-            last_year_GDPcont = new_GDPcont
+            growth_pcts_treated = growth_pcts + (init_mat[:,5] * dummy_treated_t)
+            df_out[df_row_idx,3] = df_out[df_row_idx - N_STATES,3] + growth_pcts_treated
         else:
-            df_out[df_row_idx,3] = init_growth
+            df_out[df_row_idx,3] = init_mat[:,2]
         
-    #     df_long.loc[:,'t'] = i_Year
-    #     df_out = pd.concat([df_out, df_long])
-
-    # df_out.set_index('t', append=True, inplace=True)
-    # return df_out, df_treat
     return df_out
     
 # def sim_data(data, TARGET, N_YEARS, N_TREATED, N_STATES, TREATMENT_YEAR, 

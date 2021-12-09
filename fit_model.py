@@ -1,7 +1,9 @@
 from sklearn.preprocessing import OneHotEncoder
 import pandas as pd
 import statsmodels.api as sm
+from numba import jit
 
+@jit
 def fit_TWFE(data, treatment_years, target, linear_time = False, treat_dummy_type = 'invariant'):
     encoder = OneHotEncoder(handle_unknown='ignore')
     idx_match = data.index
