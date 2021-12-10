@@ -21,7 +21,7 @@ def preprocess_data(sim_mat, init_mat, linear_time = False, treat_dummy_type = 0
     state_labels = np.char.add(
                         np.repeat('state_', N_STATES),
                         init_mat[:,0].astype(np.int32).astype(str)) 
-    baseline = state_labels[0]
+    # baseline = state_labels[0]
     state_labels = state_labels[1:]
 
     N_STEPS = int(sim_mat[:,1].max())
@@ -42,12 +42,13 @@ def preprocess_data(sim_mat, init_mat, linear_time = False, treat_dummy_type = 0
     else:
         time_out = time_sparse[:,1:]
         time_labels = time_labels[1:]
-        baseline = np.append(baseline, time_sparse[0])
+        # baseline = np.append(baseline, time_sparse[0])
 
     one_pad = np.ones((n_row, 1))
     if treat_dummy_type == 0:
         data_out = np.concatenate((one_pad, sim_mat[:,[2]], time_out, state_sparse[:,1:], comp_invariant), axis = 1)
         treat_labels = np.array(['d'])
+
     else: 
         if treat_dummy_type == 1:
             to_include = np.where(comp.sum(axis = 0) != 0)[0]
@@ -70,7 +71,7 @@ def preprocess_data(sim_mat, init_mat, linear_time = False, treat_dummy_type = 0
                                   state_labels,
                                   treat_labels))
     target = np.ascontiguousarray(sim_mat[:,3]) #GDPcont column
-    return data_out, data_labels, baseline, target
+    return data_out, treat_labels, target
 # cc.compile()
 
 cc = CC('compute_OLS')

@@ -59,11 +59,11 @@ cc.compile()
 
 # @jit(nopython = True)
 cc = CC('run_sim')
-@cc.export('run_sim', 'f8[:,:](f8[:,:], i4, f4, f4, f4, f4, f4, i4)')
-def run_sim(init_mat, N_STEPS,
+@cc.export('run_sim', 'f8[:,:](f8[:,:], f4[:], i4, f4, f4, f4, f4, f4, i4)')
+def run_sim(init_mat, REGIONAL_GROWTH_PCT_PREDICTORS, N_STEPS,
              EXOG_GROWTH_MU, EXOG_GROWTH_SIGMA, EXOG_CONTROL_EXPLAINED_SIGMA, SECTOR_GROWTH_SIGMA,
-             SPATIAL_AUTOCORRELATION_PCT, seed = 1220):
-    np.random.seed(seed)
+             SPATIAL_AUTOCORRELATION_PCT):
+
     N_STATES = init_mat.shape[0]
     df_out = np.empty((N_STATES * (N_STEPS + 1), 4)) #state_id, t, stateControls_t, GDPcont_t
     for i_Year in range(0, N_STEPS + 1): # I think due to the fact that this is a time-series, there isn't a way to vectorize...
@@ -110,9 +110,13 @@ def run_sim(init_mat, N_STEPS,
                             N_STATES)
         df_out[df_row_idx,2] = growth_pcts * pct_explained
 
-        # if len(SECTOR_GROWTH_PCT_PREDICTORS) != 0:
-        #     for cov, delta in SECTOR_GROWTH_PCT_PREDICTORS.items():
-        #         treatment_effects += data[treatment_effects[cov]] * delta
+        # If there are regional growth predictors, parallel trends violated - this
+        # means a different counterfactual growth rate for the treated and control groups, 
+        # making the DID estimate invalid
+        if REGIONAL_GROWTH_PCT_PREDICTORS.sum() > 0:
+            for idx, region_id in enumerate(np.unique(init_mat[:,1])):
+                dummy_region = (init_mat[:,1] == region_id).astype(np.int8)
+                growth_pcts += REGIONAL_GROWTH_PCT_PREDICTORS * dummy_region
 
         if i_Year > 0:
             growth_pcts_treated = growth_pcts + (init_mat[:,5] * dummy_treated_t)
