@@ -3,29 +3,29 @@ import random
 import pandas as pd
 from numba.pycc import CC
 
-sim_params =  {
-            'TARGET' : 'GDPcont_t0',
-            # 'SPATIAL_AUTOCORRELATION_PCT' : 0,
-            # 'N_STEPS' : 10,
-            'N_TREATED' : 5,
-            'N_STATES' : 10,
-            'TREATMENT_YEAR' : (5, 0), #mu, sigma
-            # 'TREATMENT_YEAR' : {'mu' : 5, 
-            # #                     'sigma' : 0},
-            'EXOG_GROWTH_PAR' : (.02,.01),
-            'EXOG_CONTROL_EXPLAINED_SIGMA': .3,
-            'SECTOR_GROWTH_SIGMA' : 0.0,                   
-            # 'SECTOR_GROWTH_PCT_PREDICTORS' : {},
-            'TREATMENT_EFFECT' : (.3, 0.002) #mu, sigma
-            # 'TREATMENT_EFFECT' : {'mu': .3,
-            #                       'sigma' : 0.002},
-            # 'TREATMENT_EFFECT_PREDICTORS' : {} 
-        }
+# sim_params =  {
+#             'TARGET' : 'GDPcont_t0',
+#             # 'SPATIAL_AUTOCORRELATION_PCT' : 0,
+#             # 'N_STEPS' : 10,
+#             'N_TREATED' : 5,
+#             'N_STATES' : 10,
+#             'TREATMENT_YEAR' : (5, 0), #mu, sigma
+#             # 'TREATMENT_YEAR' : {'mu' : 5, 
+#             # #                     'sigma' : 0},
+#             'EXOG_GROWTH_PAR' : (.02,.01),
+#             'EXOG_CONTROL_EXPLAINED_SIGMA': .3,
+#             'SECTOR_GROWTH_SIGMA' : 0.0,                   
+#             # 'SECTOR_GROWTH_PCT_PREDICTORS' : {},
+#             'TREATMENT_EFFECT' : (.3, 0.002) #mu, sigma
+#             # 'TREATMENT_EFFECT' : {'mu': .3,
+#             #                       'sigma' : 0.002},
+#             # 'TREATMENT_EFFECT_PREDICTORS' : {} 
+#         }
 
 # @jit(nopython = True)
 
 cc = CC('init_sim')
-@cc.export('init_sim', 'f8[:,:](f8[:,:], i4, i4, f4, f4, f4, f4)')
+@cc.export('init_sim', 'f8[:,:](f8[:,:], i8, i8, f8, f8, f8, f8)')
 def init_sim(state_mat, N_STATES, N_TREATED, TREATMENT_YEAR_MU,
             TREATMENT_YEAR_SIGMA, TREATMENT_EFFECT_MU, TREATMENT_EFFECT_SIGMA):
 
@@ -35,12 +35,12 @@ def init_sim(state_mat, N_STATES, N_TREATED, TREATMENT_YEAR_MU,
     # choose random states
     chosen_states_ind = treat_mat[:,0].astype(np.int8) 
     # get region for chosen states
-    treat_mat[:,1] = state_mat[chosen_states_ind,1] 
+    treat_mat[:,1] = state_mat[chosen_states_ind,1].astype(np.int8) 
     # get initial growth rate for chosen states
     treat_mat[:,2] = state_mat[chosen_states_ind,2]
-    treat_mat[:,3] = np.nan
 
     # # assign treatment to N_TREATED states
+    treat_mat[:,3] = np.nan
     treat_mat[0:N_TREATED,3] = 1.0
     np.random.shuffle(treat_mat[:,3]) 
     
@@ -59,11 +59,11 @@ cc.compile()
 
 # @jit(nopython = True)
 cc = CC('run_sim')
-@cc.export('run_sim', 'f8[:,:](f8[:,:], f4[:], i4, f4, f4, f4, f4, f4, i4)')
+@cc.export('run_sim', 'f8[:,:](f8[:,:], f8[:], i8, f8, f8, f8, f8, f8)')
 def run_sim(init_mat, REGIONAL_GROWTH_PCT_PREDICTORS, N_STEPS,
              EXOG_GROWTH_MU, EXOG_GROWTH_SIGMA, EXOG_CONTROL_EXPLAINED_SIGMA, SECTOR_GROWTH_SIGMA,
              SPATIAL_AUTOCORRELATION_PCT):
-
+    print('what')
     N_STATES = init_mat.shape[0]
     df_out = np.empty((N_STATES * (N_STEPS + 1), 4)) #state_id, t, stateControls_t, GDPcont_t
     for i_Year in range(0, N_STEPS + 1): # I think due to the fact that this is a time-series, there isn't a way to vectorize...
@@ -90,11 +90,11 @@ def run_sim(init_mat, REGIONAL_GROWTH_PCT_PREDICTORS, N_STEPS,
             # make them all closer to their mean by region. If autocorrelation is 
             # very high, ie 1, then all states in the region will have the same rate. 
             # if 0, all states are indepedent and region has no effect.
-
+            N_REGIONS = len(np.unique(init_mat[:,1]))
             region_growth_base = np.random.normal(
                                         i_Year_baseGrowth,
                                         SECTOR_GROWTH_SIGMA,
-                                        N_STATES) * SPATIAL_AUTOCORRELATION_PCT
+                                        N_REGIONS) * SPATIAL_AUTOCORRELATION_PCT
 
             growth_pcts = growth_pcts * (1 - SPATIAL_AUTOCORRELATION_PCT)
 
@@ -114,9 +114,16 @@ def run_sim(init_mat, REGIONAL_GROWTH_PCT_PREDICTORS, N_STEPS,
         # means a different counterfactual growth rate for the treated and control groups, 
         # making the DID estimate invalid
         if REGIONAL_GROWTH_PCT_PREDICTORS.sum() > 0:
-            for idx, region_id in enumerate(np.unique(init_mat[:,1])):
-                dummy_region = (init_mat[:,1] == region_id).astype(np.int8)
-                growth_pcts += REGIONAL_GROWTH_PCT_PREDICTORS * dummy_region
+            for region_id in np.unique(init_mat[:,1]):
+                dummy_region = (region_id == init_mat[:,1]).astype(np.int8)
+                # growth_pcts += REGIONAL_GROWTH_PCT_PREDICTORS[region_id] * dummy_region
+
+            # for region_id in np.arange(0.0,8.0,1.0): # 7 regions
+            #     print(region_id)
+            #     dummy_region = (init_mat[:,1] == region_id).astype(np.int8)
+                # print(REGIONAL_GROWTH_PCT_PREDICTORS.shape)
+                # print(dummy_region.shape)
+                # growth_pcts += REGIONAL_GROWTH_PCT_PREDICTORS[region_id - 1] * dummy_region
 
         if i_Year > 0:
             growth_pcts_treated = growth_pcts + (init_mat[:,5] * dummy_treated_t)

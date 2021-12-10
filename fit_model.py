@@ -31,8 +31,11 @@ def preprocess_data(sim_mat, init_mat, linear_time = False, treat_dummy_type = 0
     time_sparse = np.eye(N_STEPS + 1)[sim_mat[:,1].astype(np.int32)]
     n_row = time_sparse.shape[0]
 
-    t_compare = time_sparse * np.arange(1, N_STATES + 2) # offset by 1 so need a plus 2
-    d_compare = np.tile(init_mat[:,4], N_STATES + 1).reshape((n_row,1))
+    t_compare = time_sparse * np.arange(1, N_STEPS + 2) # offset by 1 so need a plus 2
+    # t_compare = time_sparse * np.arange(1, N_STATES + 2) # offset by 1 so need a plus 2
+    print(time_sparse)
+
+    d_compare = np.tile(init_mat[:,4], N_STEPS + 1).reshape((n_row,1))
     comp = (t_compare > d_compare).astype(np.int32)
     comp_invariant = comp.sum(axis = 1).reshape((n_row,1))
 
@@ -78,7 +81,7 @@ cc = CC('compute_OLS')
 @cc.export('compute_OLS', 'f8[:](f8[:,:], f8[:], i4)')
 def compute_OLS(X, Y, treat_idx = 0):
     # n, k = X.shape
-    # XTX = X.T @ X
+    XTX = X.T @ X
     # est = np.empty((2, k))
     est = np.linalg.inv(XTX) @ X.T @ Y
     # y_hat = X @ est[0, :]
