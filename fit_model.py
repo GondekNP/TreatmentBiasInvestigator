@@ -75,18 +75,19 @@ def preprocess_data(sim_mat, init_mat, linear_time = False, treat_dummy_type = 0
 # cc.compile()
 
 cc = CC('compute_OLS')
-@cc.export('compute_OLS', 'f8[:,:](f8[:,:], f8[:], i4)')
+@cc.export('compute_OLS', 'f8[:](f8[:,:], f8[:], i4)')
 def compute_OLS(X, Y, treat_idx = 0):
-    n, k = X.shape
-    XTX = X.T @ X
-    est = np.empty(2, k)
-    est[0, :] = np.linalg.inv(XTX) @ X.T @ Y
-    y_hat = X @ est[0, :]
-    resid = y_hat - Y
-    VCV = np.true_divide(1,n-k) * (resid.T @ resid) @ np.linalg.inv(XTX)
-    est[1, :] = np.sqrt(np.diagonal(VCV))
+    # n, k = X.shape
+    # XTX = X.T @ X
+    # est = np.empty((2, k))
+    est = np.linalg.inv(XTX) @ X.T @ Y
+    # y_hat = X @ est[0, :]
+    # resid = y_hat - Y
+    # vcv = np.true_divide(1,(n-k)) *\
+        # np.dot((resid.T @ resid), np.linalg.inv(XTX))
+    # est[1, :] = np.sqrt(np.diagonal(vcv))
     if treat_idx == 0:
         return est
     else:
-        return est[:,-treat_idx:]
+        return est[-treat_idx:]
 cc.compile()

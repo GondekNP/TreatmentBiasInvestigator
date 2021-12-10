@@ -36,12 +36,12 @@ def TWFE_sim(output_db_path, N_SIMS_PER_COMBO_THREAD, EXOG_GROWTH_MU, N_STEPS, N
                  TREATMENT_EFFECT_MU, TREATMENT_EFFECT_SIGMA, SPATIAL_AUTOCORRELATION_PCT,
                  REGIONAL_GROWTH_PREDICTORS):
     insert_track = \
-    '''INSERT INTO sim_results(sim_hash, pk, treatment_year_mu, treatment_year_sigma, exog_growth_sigma, exog_control_explained_sigma, treatment_effect_mu, treatment_effect_sigma, spatial_autocorrelation_pct, regional_growth_predictors, comp_time)
+    '''INSERT INTO sim_results(sim_hash, treatment_year_mu, treatment_year_sigma, exog_growth_sigma, exog_control_explained_sigma, treatment_effect_mu, treatment_effect_sigma, spatial_autocorrelation_pct, regional_growth_predictors, comp_time)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'''
  
     insert_beta = \
-    '''INSERT INTO beta(sim_hash, n_steps, parameter, estimate, std)
-        VALUES (?, ?, ?, ?, ?);'''
+    '''INSERT INTO beta(sim_hash, n_steps, parameter, estimate)
+        VALUES (?, ?, ?, ?);'''
 
     state_mat = pd.read_csv('location_sim_base.csv').to_numpy()
     comm = MPI.COMM_WORLD
@@ -57,7 +57,7 @@ def TWFE_sim(output_db_path, N_SIMS_PER_COMBO_THREAD, EXOG_GROWTH_MU, N_STEPS, N
                         for treatment_effect_sigma in TREATMENT_EFFECT_SIGMA:
                             for spatial_autocorrelation_pct in SPATIAL_AUTOCORRELATION_PCT:
                                 for sector_growth_sigma in SECTOR_GROWTH_SIGMA:
-                                    for region_growth_vector in REGIONAL_GROWTH_PREDICTORS:
+                                    for rgv_label, region_growth_vector in REGIONAL_GROWTH_PREDICTORS.items():
                                         
                                         init_mat = init_sim.init_sim(
                                             state_mat, N_STATES, N_TREATED, TREATMENT_YEAR_MU, #common across all sims
@@ -74,6 +74,12 @@ def TWFE_sim(output_db_path, N_SIMS_PER_COMBO_THREAD, EXOG_GROWTH_MU, N_STEPS, N
                                         
                                         hash_str = str(rank) + str(time.time())
                                         sim_hash = hashlib.md5(hash_str.encode())
+                                        cursor.execute(insert_track,
+                                            [sim_hash, TREATMENT_YEAR_MU, treatment_year_sigma,
+                                            exog_growth_sigma, exog_control_explained_sigma,
+                                            treatment_effect_mu, treatment_effect_sigma,
+                                            spatial_autocorrelation_pct, rgv_label])
+                                        cursor.commit()
 
                                         for treat_dummy_idx in [0,1,2]:
                                             for survey_period in N_STEPS:
@@ -83,23 +89,17 @@ def TWFE_sim(output_db_path, N_SIMS_PER_COMBO_THREAD, EXOG_GROWTH_MU, N_STEPS, N
                                                 data_out, treat_labels, target = fit_model.preprocess_data(
                                                     step_sim, init_mat, 
                                                     treat_dummy_type=treat_dummy_idx)
-                                                treat_label_idx = len(treatment_labels)
+                                                treat_label_idx = len(treat_labels)
                                                 
                                                 weights = compute_OLS.compute_OLS(data_out, target, treat_label_idx)
                                                 for i, weight in weights:
                                                     cursor.execute(insert_beta,
-                                                    [sim_hash, survey_period]
-
-                                        
-
-
-
-                                    
-                    
+                                                    [sim_hash, survey_period,
+                                                    treat_labels[i], weight])
+                                                    cursor.commit()    
 
 def main():
     TWFE_sim('results.sql', **meta_sim_params)
-
 
 if __name__ == '__main__':
     main()
