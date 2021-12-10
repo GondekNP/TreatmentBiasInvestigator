@@ -15,16 +15,17 @@ meta_sim_params = {
     'EXOG_GROWTH_MU' : .03,
     'N_STATES' : 51,
     'N_TREATED' : 25,
-    'N_STEPS' : np.arange(100,25,-5), 
+    'N_STEPS' : np.arange(100,25,-10), 
     'TREATMENT_YEAR_MU' : 15, #will not change
-    'TREATMENT_YEAR_SIGMA' : np.arange(0.0,6.0,1.0), #5 sigmas
+    'TREATMENT_YEAR_SIGMA' : np.array([0.0, 1.0, 2.5, 5]), #4 sigmas
     'EXOG_GROWTH_SIGMA' : np.arange(0,.033,.003), #10 sigmas
-    'EXOG_CONTROL_EXPLAINED_SIGMA' : np.arange(0,.66,.06),
-    'SECTOR_GROWTH_SIGMA' : np.arange(0,.033,.003),
+    'EXOG_CONTROL_EXPLAINED_SIGMA' : np.arange(0,.66,.11),
+    'SECTOR_GROWTH_SIGMA' : np.arange(0,.033,.009),
     'TREATMENT_EFFECT_MU' : np.arange(0.01,.1, .01), #9 means, from 1/3 to 3x the average year exog growth
     'TREATMENT_EFFECT_SIGMA' : np.arange(0.01,.055, .005),
-    'SPATIAL_AUTOCORRELATION_PCT' : np.arange(0,.8,.1),
-        'REGIONAL_GROWTH_PREDICTORS' : {'none' : np.array([0,0,0,0,0,0,0,0])}
+    'SPATIAL_AUTOCORRELATION_PCT' : np.array([0]),
+    # 'SPATIAL_AUTOCORRELATION_PCT' : np.arange(0,.8,.1),
+    'REGIONAL_GROWTH_PREDICTORS' : {'none' : np.array([0,0,0,0,0,0,0,0])}
     # 'REGIONAL_GROWTH_PREDICTORS' : { 'strong' : np.array([2,7,3,5,4,6,1,0]) / 800, #strong parallel trend violation
     #                                  'weak'  : np.array([2,7,3,5,4,6,1,0]) / 4000, #weaker
     #                                  'none' : np.array([0,0,0,0,0,0,0,0])} #no violation
@@ -93,15 +94,12 @@ def TWFE_sim(output_db_path, N_SIMS_PER_COMBO_THREAD, EXOG_GROWTH_MU, N_STEPS, N
                                             spatial_autocorrelation_pct, rgv_label])
 
                                         pk = cursor.execute('SELECT last_insert_rowid();').fetchone()[0]
-                                        print(pk)
-                                        print(type(pk))
                                         connection.commit()
 
-                                        for treat_dummy_idx in [0,1,2]:
-                                            for survey_period in N_STEPS:
-                                                print(survey_period)
-                                                print(type(int(survey_period)))
+                                        for treat_dummy_idx in [0]:
+                                        # for treat_dummy_idx in [0,1,2]:
 
+                                            for survey_period in N_STEPS:
                                                 max_row_idx = N_STATES * survey_period
                                                 step_sim = sim_mat[:max_row_idx,:]
                                                 data_out, treat_labels, target = fit_model.preprocess_data(
@@ -111,7 +109,6 @@ def TWFE_sim(output_db_path, N_SIMS_PER_COMBO_THREAD, EXOG_GROWTH_MU, N_STEPS, N
                                                 # print('proc_dat')
 
                                                 weights = compute_OLS.compute_OLS(data_out, target, treat_label_idx)
-                                                print(weights.shape)
                                                 for i, weight in enumerate(weights):
                                                     cursor.execute(insert_beta,
                                                         [pk, int(survey_period),
