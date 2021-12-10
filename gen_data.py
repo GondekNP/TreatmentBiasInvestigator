@@ -6,7 +6,7 @@ from numba import jit
 sim_params =  {
             'TARGET' : 'GDPcont_t0',
             # 'SPATIAL_AUTOCORRELATION_PCT' : 0,
-            # 'N_YEARS' : 10,
+            # 'N_STEPS' : 10,
             'N_TREATED' : 5,
             'N_STATES' : 10,
             'TREATMENT_YEAR' : (5, 0), #mu, sigma
@@ -45,24 +45,23 @@ def init_sim(state_mat, N_STATES, N_TREATED, TREATMENT_YEAR_PAR, TREATMENT_EFFEC
     treat_mat[:,4] = np.random.normal(year_mu, year_sig,
                                     N_STATES) * treat_mat[:,3] 
     
-    # # generate the potential treatment effect for all states
+    # generate the potential treatment effect for all states
     effect_mu, effect_sig = TREATMENT_EFFECT_PAR
     treat_mat[:,5] = np.random.normal(effect_mu, effect_sig, N_STATES)
     
     return treat_mat
 
 @jit(nopython = True)
-def run_sim(init_mat, N_YEARS,
+def run_sim(init_mat, N_STEPS,
              EXOG_GROWTH_PAR, EXOG_CONTROL_EXPLAINED_SIGMA, SECTOR_GROWTH_SIGMA,
              SPATIAL_AUTOCORRELATION_PCT):
             #  , SECTOR_GROWTH_PCT_PREDICTORS,
             #  TREATMENT_EFFECT, TREATMENT_EFFECT_PREDICTORS):
     N_STATES = init_mat.shape[0]
-    df_out = np.empty((N_STATES * (N_YEARS + 1), 4)) #state_id, t, stateControls_t, GDPcont_t
-    for i_Year in range(0, N_YEARS + 1): # I think due to the fact that this is a time-series, there isn't a way to vectorize...
+    df_out = np.empty((N_STATES * (N_STEPS + 1), 4)) #state_id, t, stateControls_t, GDPcont_t
+    for i_Year in range(0, N_STEPS + 1): # I think due to the fact that this is a time-series, there isn't a way to vectorize...
         df_row_idx = (i_Year * N_STATES) + np.arange(0,N_STATES) 
         df_out[df_row_idx, 0] = init_mat[:,0] #State
-        print(init_mat[:,0])
         df_out[df_row_idx, 1] = i_Year #timestep
 
         dummy_treated_t = (i_Year == init_mat[:,4]).astype(np.int8)
@@ -95,17 +94,17 @@ def run_sim(init_mat, N_YEARS,
                 dummy_region = (init_mat[:,1] == region_id).astype(np.int8)
                 growth_pcts += region_growth_base[idx] * dummy_region
 
-    #     # This is an index for endogenous variables that help us explain the growth rate
-    #     # for a particular state - if the sigma here is 0, this means that we can explain
-    #     # state level growth entirely since controls == growth pct
+        # This is an index for endogenous variables that help us explain the growth rate
+        # for a particular state - if the sigma here is 0, this means that we can explain
+        # state level growth entirely since controls == growth pct
         pct_explained = np.random.normal(1,
                             EXOG_CONTROL_EXPLAINED_SIGMA,
                             N_STATES)
         df_out[df_row_idx,2] = growth_pcts * pct_explained
 
-    #     if len(SECTOR_GROWTH_PCT_PREDICTORS) != 0:
-    #         for cov, delta in SECTOR_GROWTH_PCT_PREDICTORS.items():
-    #             treatment_effects += data[treatment_effects[cov]] * delta
+        # if len(SECTOR_GROWTH_PCT_PREDICTORS) != 0:
+        #     for cov, delta in SECTOR_GROWTH_PCT_PREDICTORS.items():
+        #         treatment_effects += data[treatment_effects[cov]] * delta
 
         if i_Year > 0:
             growth_pcts_treated = growth_pcts + (init_mat[:,5] * dummy_treated_t)
@@ -115,13 +114,13 @@ def run_sim(init_mat, N_YEARS,
         
     return df_out
     
-# def sim_data(data, TARGET, N_YEARS, N_TREATED, N_STATES, TREATMENT_YEAR, 
+# def sim_data(data, TARGET, N_STEPS, N_TREATED, N_STATES, TREATMENT_YEAR, 
 #              EXOG_GROWTH_PCT, EXOG_CONTROL_PCT_EXPLAINED,
 #              SPATIAL_AUTOCORRELATION_PCT,
 #              SECTOR_GROWTH_PCT, SECTOR_GROWTH_PCT_PREDICTORS,
 #              TREATMENT_EFFECT, TREATMENT_EFFECT_PREDICTORS):
 
-# def sim_data(data, TARGET, N_YEARS, N_STATES, N_TREATED, TREATMENT_YEAR, TREATMENT_EFFECT
+# def sim_data(data, TARGET, N_STEPS, N_STATES, N_TREATED, TREATMENT_YEAR, TREATMENT_EFFECT
 #              EXOG_GROWTH_PCT, EXOG_CONTROL_PCT_EXPLAINED,
 #              SPATIAL_AUTOCORRELATION_PCT,
 #              SECTOR_GROWTH_PCT, SECTOR_GROWTH_PCT_PREDICTORS,
