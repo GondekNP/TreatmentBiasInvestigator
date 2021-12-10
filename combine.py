@@ -11,7 +11,7 @@ import run_sim
 import compute_OLS
 
 meta_sim_params = {
-    'N_SIMS_PER_COMBO_THREAD': 1000, #Embarassingly Parallel approach
+    'N_SIMS_PER_COMBO_THREAD': 10, #Embarassingly Parallel approach
     'EXOG_GROWTH_MU' : .03,
     'N_STATES' : 51,
     'N_TREATED' : 25,
