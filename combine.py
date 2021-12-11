@@ -91,12 +91,15 @@ def TWFE_sim(output_db_path, N_SIMS_PER_COMBO_THREAD, EXOG_GROWTH_MU, N_STEPS, N
                                                     treat_dummy_type=treat_dummy_idx)
                                                 treat_label_idx = len(treat_labels)
 
-                                                weights = compute_OLS.compute_OLS(data_out, target, treat_label_idx)
-                                                for i, weight in enumerate(weights):
-                                                    cursor.execute(insert_beta,
-                                                        [pk, int(survey_period),
-                                                        treat_labels[i], weight])
-
+                                                # weights = compute_OLS.compute_OLS(data_out, target, treat_label_idx)
+                                                weight = fit_model.compute_sm_OLS(data_out, target)
+                                                # for i, weight in enumerate(weights):
+                                                    # cursor.execute(insert_beta,
+                                                    #     [pk, int(survey_period),
+                                                    #     treat_labels[i], weight])
+                                                cursor.execute(insert_beta,
+                                                    [pk, int(survey_period),
+                                                    'd', weight])
                                                 connection.commit()    
     connection.close()
 
