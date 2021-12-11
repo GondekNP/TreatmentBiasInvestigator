@@ -56,6 +56,7 @@ def TWFE_sim(output_db_path, N_SIMS_PER_COMBO_THREAD, EXOG_GROWTH_MU, N_STEPS, N
                     for treatment_effect_mu in TREATMENT_EFFECT_MU:
                         for treatment_effect_sigma in TREATMENT_EFFECT_SIGMA:
                             for treatment_year_sigma in TREATMENT_YEAR_SIGMA:
+                                for sector_growth_sigma in SECTOR_GROWTH_SIGMA:
                                     for rgv_label, region_growth_vector in REGIONAL_GROWTH_PREDICTORS.items():
                                         init_mat = init_sim.init_sim(
                                             state_mat, N_STATES, N_TREATED, TREATMENT_YEAR_MU, #common across all sims
