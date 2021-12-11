@@ -1,5 +1,4 @@
 from pandas.io.parsers import read_csv
-# from mpi4py import MPI
 import numpy as np
 import pandas as pd
 import sqlite3
@@ -46,36 +45,23 @@ def TWFE_sim(output_db_path, N_SIMS_PER_COMBO_THREAD, EXOG_GROWTH_MU, N_STEPS, N
 
     init_db.init_db(output_db_path)
     state_mat = pd.read_csv('location_sim_base.csv').to_numpy()
-    # comm = MPI.COMM_WORLD
-    # rank = comm.Get_rank() 
-    rank = 2
+
     connection = sqlite3.connect(output_db_path)
     cursor = connection.cursor()
 
     for _ in range(N_SIMS_PER_COMBO_THREAD):
-        for treatment_year_sigma in TREATMENT_YEAR_SIGMA:
+        for spatial_autocorrelation_pct in SPATIAL_AUTOCORRELATION_PCT:
             for exog_growth_sigma in EXOG_GROWTH_SIGMA:
                 for exog_control_explained_sigma in EXOG_CONTROL_EXPLAINED_SIGMA:
                     for treatment_effect_mu in TREATMENT_EFFECT_MU:
                         for treatment_effect_sigma in TREATMENT_EFFECT_SIGMA:
-                            for spatial_autocorrelation_pct in SPATIAL_AUTOCORRELATION_PCT:
-                                for sector_growth_sigma in SECTOR_GROWTH_SIGMA:
+                            for treatment_year_sigma in TREATMENT_YEAR_SIGMA:
                                     for rgv_label, region_growth_vector in REGIONAL_GROWTH_PREDICTORS.items():
-                                        
                                         init_mat = init_sim.init_sim(
                                             state_mat, N_STATES, N_TREATED, TREATMENT_YEAR_MU, #common across all sims
                                             treatment_year_sigma, treatment_effect_mu, treatment_effect_sigma)
-                                        # print('init_mat')
+
                                         max_n_steps = N_STEPS.max()
-                                        
-                                        # for item in [init_mat, region_growth_vector, max_n_steps,
-                                        #     EXOG_GROWTH_MU, exog_growth_sigma,
-                                        #     exog_control_explained_sigma,
-                                        #     sector_growth_sigma,
-                                        #     spatial_autocorrelation_pct]:
-                                        #     print(type(item))
-                                        # print(init_mat)
-                                        # print(region_growth_vector)
 
                                         sim_mat = run_sim.run_sim(
                                             init_mat, region_growth_vector, max_n_steps,
@@ -83,10 +69,7 @@ def TWFE_sim(output_db_path, N_SIMS_PER_COMBO_THREAD, EXOG_GROWTH_MU, N_STEPS, N
                                             exog_control_explained_sigma,
                                             sector_growth_sigma,
                                             spatial_autocorrelation_pct)
-                                        # print('sim_mat')
-
-                                        # hash_str = str(rank) + str(time.time())
-                                        # sim_hash = str(hashlib.md5(hash_str.encode()))
+                                        
                                         cursor.execute(insert_track,
                                             [TREATMENT_YEAR_MU, treatment_year_sigma,
                                             exog_growth_sigma, exog_control_explained_sigma,
@@ -106,26 +89,13 @@ def TWFE_sim(output_db_path, N_SIMS_PER_COMBO_THREAD, EXOG_GROWTH_MU, N_STEPS, N
                                                     step_sim, init_mat, 
                                                     treat_dummy_type=treat_dummy_idx)
                                                 treat_label_idx = len(treat_labels)
-                                                # print('proc_dat')
 
                                                 weights = compute_OLS.compute_OLS(data_out, target, treat_label_idx)
                                                 for i, weight in enumerate(weights):
                                                     cursor.execute(insert_beta,
                                                         [pk, int(survey_period),
                                                         treat_labels[i], weight])
-                                                # if len(weights) == 1:
-                                                #     print(weights)
-                                                #     print(type(weights))
-                                                #     cursor.execute(insert_beta,
-                                                #     [pk, int(survey_period),
-                                                #     treat_labels[0], weights])
-                                                # else:
-                                                #     print(weights)
-                                                #     print(type(weights))
-                                                #     for i, weight in enumerate(weights):
-                                                #         cursor.execute(insert_beta,
-                                                #         [pk, int(survey_period),
-                                                #         treat_labels[i], weight])
+
                                                 connection.commit()    
     connection.close()
 
