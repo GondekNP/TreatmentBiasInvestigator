@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=mpi_gondek_LSC_proj
-#SBATCH --ntasks=8
+#SBATCH --ntasks=24
 #SBATCH --partition=broadwl
 #SBATCH --account=macs30123
 
@@ -13,7 +13,7 @@ python3 ./fit_model.py
 python3 ./gen_data.py
 
 # Run the python program with mpirun, using & to run jobs at the same time
-mpirun -n 8 python3 ./combine.py > ./sim_verbose.out &
+mpirun -n 24 python3 ./combine.py > ./sim_verbose.out &
 
 # Wait until all simultaneous mpiruns are done
 wait
